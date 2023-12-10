@@ -8,5 +8,6 @@
         public string Password { get; set; }
         public Guid SaleId { get; set; }
         public Sale Sale { get; set; }
+        public IEnumerable<Purchase> Purchases { get; set; }
     }
 }
