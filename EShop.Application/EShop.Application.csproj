@@ -17,4 +17,8 @@
     <ProjectReference Include="..\EShop.Domain\EShop.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Purchases\" />
+  </ItemGroup>
+
 </Project>

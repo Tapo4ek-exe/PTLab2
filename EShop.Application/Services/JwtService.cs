@@ -7,9 +7,9 @@ namespace EShop.Application.Services
 {
     public class JwtService
     {
-        private const string Issuer = "EShopAuth";
-        private const string Audience = "EShopClient";
-        private const string Key = "SecretKeyForAppWithLengthMoreThan16Bytes";
+        public const string Issuer = "EShopAuth";
+        public const string Audience = "EShopClient";
+        public const string Key = "SecretKeyForAppWithLengthMoreThan16Bytes";
 
         public string GetJwtTokenForUser(Guid userId)
         {
@@ -27,7 +27,7 @@ namespace EShop.Application.Services
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
 
-        private SymmetricSecurityKey GetSymmetricSecurityKey() =>
+        public static SymmetricSecurityKey GetSymmetricSecurityKey() =>
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
     }
 }
