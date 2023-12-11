@@ -18,14 +18,23 @@ namespace EShop.Application.Features.Users.Commands.RegisterUser
 
         public async Task<string> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
+            var sale = new Sale
+            {
+                Id = Guid.NewGuid(),
+                Value = 0,
+                MinTotalExpanses = 0,
+            };
+
             var user = new User
             {
                 Id = Guid.NewGuid(),
                 Name = request.Name,
                 Email = request.Email,
                 Password = HashService.HashPassword(request.Password),
+                SaleId = sale.Id,
             };
 
+            await _dbContext.Sales.AddAsync(sale, cancellationToken);
             await _dbContext.Users.AddAsync(user, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
