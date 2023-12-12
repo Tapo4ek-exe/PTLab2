@@ -11,13 +11,16 @@ import {
   ToastTitle,
   useToastController,
   useId,
-  Toaster
+  Toaster,
+  ToastIntent,
 } from "@fluentui/react-components";
 import { Products } from "./components/Products/Products";
 import { Login } from "./components/Login/Login";
 import { EShopApi } from "./api/EShopApi";
 import { Profile } from "./components/Profile/Profile";
 import { Product } from "./models/Product";
+import { Purchase } from "./models/Purchase";
+import { PurchaseList } from "./components/PurchaseList/PurchaseList";
 
 const useStyles = makeStyles({
   app: {
@@ -43,6 +46,8 @@ const useStyles = makeStyles({
     marginBottom: "auto",
   },
   profile: {
+    display: "flex",
+    flexDirection: "row",
     marginRight: "10px",
     marginLeft: "auto",
     marginTop: "auto",
@@ -60,33 +65,48 @@ const App: React.FunctionComponent = () => {
 
   const toasterId = useId("toaster");
   const { dispatchToast } = useToastController(toasterId);
-  const notifyError = () =>
+  const notify = (title: string, message: string, type: ToastIntent) =>
     dispatchToast(
       <Toast>
-        <ToastTitle>Список товаров</ToastTitle>
-        <ToastBody>Ошибка при получении списка товаров!</ToastBody>
+        <ToastTitle>{title}</ToastTitle>
+        <ToastBody>{message}</ToastBody>
       </Toast>,
-      { intent: "error" }
+      { intent: type }
     );
 
   const [userIsLoggedIn, setUserIsLoggedIn] = useState(
     api.checkUserIsLoggedIn()
   );
   const [productList, setpProductList] = useState<Product[]>([]);
+  const [purchaseList, setpPurchaseList] = useState<Purchase[]>([]);
 
   const getProducts = async () => {
     const response = await api.getProducts();
-    console.log(response);
-    if (response.IsSuccess) {
-      setpProductList(response.Data ?? []);
+    if (response.IsSuccess && response.Data) {
+      setpProductList(response.Data.products);
     } else {
       console.log(response.Errors);
-      notifyError();
+      notify("Список товаров", "Ошибка при получении списка товаров!", "error");
     }
   };
 
-  useEffect(() => {
+  const getPurchases = async () => {
+    const response = await api.getPurchases();
+    if (response.IsSuccess && response.Data) {
+      setpPurchaseList(response.Data.purchases);
+    } else {
+      console.log(response.Errors);
+      notify("Список заказов", "Ошибка при получении списка заказов!", "error");
+    }
+  };
+
+  const loadData = () => {
     getProducts();
+    getPurchases();
+  };
+
+  useEffect(() => {
+    loadData();
   }, [userIsLoggedIn]);
 
   return (
@@ -96,6 +116,7 @@ const App: React.FunctionComponent = () => {
           <Title1>EShop</Title1>
         </div>
         <div className={classes.profile}>
+          {userIsLoggedIn && <PurchaseList purchaseList={purchaseList} />}
           {userIsLoggedIn ? (
             <Profile
               onLogout={() => {
@@ -114,7 +135,17 @@ const App: React.FunctionComponent = () => {
       <Divider />
       <div className={classes.appContainer}>
         <Title3>Товары:</Title3>
-        <Products products={productList} />
+        <Products
+          products={productList}
+          onPurchaseCreated={() => {
+            notify("Покупка", "Заказ оформлен успешно!", "success");
+            loadData();
+          }}
+          onError={(error) => {
+            notify("Покупка", error, "error");
+            loadData();
+          }}
+        />
       </div>
       <Toaster toasterId={toasterId} />
     </div>

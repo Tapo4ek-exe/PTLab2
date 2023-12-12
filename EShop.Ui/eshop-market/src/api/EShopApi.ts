@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { Product } from "../models/Product";
 import { RequestResult } from "../models/RequestResult";
 import { ApiBaseUrl, JwtTokenKey } from "../Constants";
+import { IProductListVm } from "./interfaces/IProductListVm";
+import { IPurchaseListVm } from "./interfaces/IPurchaseListVm";
 
 export class EShopApi {
   private _httpClient: AxiosInstance;
@@ -48,8 +49,18 @@ export class EShopApi {
     return response;
   }
 
-  async getProducts(): Promise<RequestResult<Product[]>> {
-    const response = await this.get<Product[]>("Product/GetProducts");
+  async getProducts(): Promise<RequestResult<IProductListVm>> {
+    const response = await this.get<IProductListVm>("Product/GetProducts");
+    return response;
+  }
+
+  async makePurchase(productId: string, address: string): Promise<RequestResult<string>> {
+    const response = await this.post<string>("Purchase/CreatePurchase", { productId: productId, address: address });
+    return response;
+  }
+
+  async getPurchases(): Promise<RequestResult<IPurchaseListVm>> {
+    const response = await this.get<IPurchaseListVm>("Purchase/GetUserPurchases");
     return response;
   }
 
