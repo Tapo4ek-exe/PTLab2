@@ -21,13 +21,24 @@ namespace EShop.Application.Features.Products.Queries.GetProductList
         public async Task<ProductListVm> Handle(GetProductListQuery request, CancellationToken cancellationToken)
         {
             var products = await _dbContext.Products.ProjectTo<ProductDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+            foreach (var product in products)
+            {
+                product.SalePrice = product.Price;
+            }
+
             if (request.UserId != null)
             {
                 var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken);
-                var sale = user.Sale.Value;
-                foreach (var product in products)
+                if (user != null)
                 {
-                    product.SalePrice = product.Price / 100 * (100 - sale);
+                    var sale = await _dbContext.Sales.FirstOrDefaultAsync(sale => sale.Id == user.SaleId, cancellationToken);
+                    if (sale != null)
+                    {
+                        foreach (var product in products)
+                        {
+                            product.SalePrice = product.Price / 100 * (100 - sale.Value);
+                        }
+                    }
                 }
             }
 

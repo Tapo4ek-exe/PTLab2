@@ -22,7 +22,6 @@ namespace EShop.Application.Features.Users.Commands.RegisterUser
             {
                 Id = Guid.NewGuid(),
                 Value = 0,
-                MinTotalExpanses = 0,
             };
 
             var user = new User
