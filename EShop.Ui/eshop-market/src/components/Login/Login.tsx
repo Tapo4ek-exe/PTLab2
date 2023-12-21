@@ -16,9 +16,10 @@ import { EShopApi } from "../../api/EShopApi";
 
 type LoginProps = {
   onLoginSuccess?: () => void;
+  onError?: (error: string) => void;
 };
 
-const Login: React.FunctionComponent<LoginProps> = ({ onLoginSuccess }) => {
+const Login: React.FunctionComponent<LoginProps> = ({ onLoginSuccess, onError }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
 
@@ -42,6 +43,11 @@ const Login: React.FunctionComponent<LoginProps> = ({ onLoginSuccess }) => {
     if (response.IsSuccess && onLoginSuccess) {
       onLoginSuccess();
       hideModal();
+    } else {
+      console.log(response.Errors);
+      if (onError) {
+        onError(isLogin ? "Неверный логин или пароль!" : "Возникла ошибка при регистрации!");
+      }
     }
   };
 

@@ -7,7 +7,6 @@ import {
   Title3,
   Toast,
   ToastBody,
-  ToastFooter,
   ToastTitle,
   useToastController,
   useId,
@@ -21,6 +20,7 @@ import { Profile } from "./components/Profile/Profile";
 import { Product } from "./models/Product";
 import { Purchase } from "./models/Purchase";
 import { PurchaseList } from "./components/PurchaseList/PurchaseList";
+import { error } from "console";
 
 const useStyles = makeStyles({
   app: {
@@ -102,7 +102,9 @@ const App: React.FunctionComponent = () => {
 
   const loadData = () => {
     getProducts();
-    getPurchases();
+    if (userIsLoggedIn) {
+      getPurchases();
+    }
   };
 
   useEffect(() => {
@@ -128,6 +130,7 @@ const App: React.FunctionComponent = () => {
               onLoginSuccess={() => {
                 setUserIsLoggedIn(true);
               }}
+              onError={(error) => notify("Авторизация/Регистрация", error, "error")}
             />
           )}
         </div>
