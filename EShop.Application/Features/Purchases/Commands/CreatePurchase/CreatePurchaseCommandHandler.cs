@@ -25,8 +25,6 @@ namespace EShop.Application.Features.Purchases.Commands.CreatePurchase
 
         public async Task<Guid> Handle(CreatePurchaseCommand request, CancellationToken cancellationToken)
         {
-            
-
             var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken);
             if (user == null)
             {
